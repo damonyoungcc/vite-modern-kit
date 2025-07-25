@@ -2,11 +2,10 @@ import fs from "fs";
 import path from "path";
 
 export interface RouteMeta {
-  path: string;              // URL route path, e.g. /a/:id/*
-  absolutePath: string;      // Absolute file path to the page component
-  componentPath: string;     // Relative import path from src/
-  layoutPaths: string[];     // Layout components from outer to inner
-  disableLayout?: boolean;   // Whether to skip layout wrapping
+  path: string; // URL route path, e.g. /a/:id/*
+  absolutePath: string; // Absolute file path to the page component
+  componentPath: string; // Relative import path from src/
+  layoutPaths: string[]; // Layout components from outer to inner
 }
 
 const PAGE_FILE = "page.tsx";
@@ -78,7 +77,6 @@ export function scanRoutes(pagesDir: string): RouteMeta[] {
           layoutPaths: currentLayouts.map((p) =>
             path.relative(path.resolve("src"), p).replace(/\\/g, "/")
           ),
-          disableLayout: checkDisableLayout(path.join(dir, PAGE_FILE)),
         });
       }
     }
@@ -110,13 +108,4 @@ function normalizePath(routePath: string, componentPath: string): string {
 
   const clean = routePath.replace(/\/+$/, "");
   return clean === "" ? "/" : clean;
-}
-
-/**
- * Naively detect `disableLayout` from content keyword.
- * You can later replace this with `export const disableLayout = true` analysis.
- */
-function checkDisableLayout(filePath: string): boolean {
-  const content = fs.readFileSync(filePath, "utf-8");
-  return content.includes("disableLayout");
 }
