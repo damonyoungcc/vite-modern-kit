@@ -16,7 +16,7 @@ export default function VmkRoutesPlugin(): Plugin {
       if (id !== resolvedId) return;
       const pagesDir = path.resolve("src/pages");
       const routes = scanRoutes(pagesDir);
-
+      console.log("🚀 ~ file: index.ts:15 ~ load ~ routes:", routes);
       return generateRouteTreeCode(routes); // 🟢 用你写的封装函数
     },
   };
