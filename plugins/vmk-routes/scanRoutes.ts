@@ -30,25 +30,17 @@ export function scanRoutes(pagesDir: string): RouteMeta[] {
   walk(pagesDir, [], []);
   return routes;
 
-  function walk(
-    dir: string,
-    parentSegments: string[],
-    parentLayouts: string[]
-  ) {
+  function walk(dir: string, parentSegments: string[], parentLayouts: string[]) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
 
     // Collect layouts from parent and current directory
-    const layoutEntry = entries.find(
-      (e) => e.isFile() && e.name === LAYOUT_FILE
-    );
+    const layoutEntry = entries.find((e) => e.isFile() && e.name === LAYOUT_FILE);
     const currentLayouts = layoutEntry
       ? [...parentLayouts, path.join(dir, layoutEntry.name)]
       : [...parentLayouts];
 
     const hasPage = entries.some(
-      (e) =>
-        e.name === `${PAGE_BASE_NAME}${EXT}` ||
-        e.name === `${PAGE_BASE_NAME}${NO_WRAP_EXT}`
+      (e) => e.name === `${PAGE_BASE_NAME}${EXT}` || e.name === `${PAGE_BASE_NAME}${NO_WRAP_EXT}`
     );
     const hasIndexPage = fs.existsSync(path.join(dir, INDEX_PAGE_FILE));
 
@@ -74,20 +66,16 @@ export function scanRoutes(pagesDir: string): RouteMeta[] {
         const segments = relPath.split(path.sep).filter(Boolean);
 
         const isRootCatchAll =
-          segments.length === 2 &&
-          segments[0] === "index" &&
-          /^\[\.\.\..+\]$/.test(segments[1]);
+          segments.length === 2 && segments[0] === "index" && /^\[\.\.\..+\]$/.test(segments[1]);
 
         const rawRoutePath =
           segments.length === 0
             ? "/"
             : isRootCatchAll
-            ? "/*"
-            : "/" + segments.map(toRouteSegment).join("/");
+              ? "/*"
+              : "/" + segments.map(toRouteSegment).join("/");
 
-        const componentPath = path
-          .relative(path.resolve("src"), absPath)
-          .replace(/\\/g, "/");
+        const componentPath = path.relative(path.resolve("src"), absPath).replace(/\\/g, "/");
 
         const normalizedPath = normalizeRoutePath(rawRoutePath, componentPath);
 
@@ -105,15 +93,9 @@ export function scanRoutes(pagesDir: string): RouteMeta[] {
         const localLayoutPath = findLocalLayout(dir);
         const layoutPaths = isNoWrap
           ? localLayoutPath
-            ? [
-                path
-                  .relative(path.resolve("src"), localLayoutPath)
-                  .replace(/\\/g, "/"),
-              ]
+            ? [path.relative(path.resolve("src"), localLayoutPath).replace(/\\/g, "/")]
             : []
-          : currentLayouts.map((p) =>
-              path.relative(path.resolve("src"), p).replace(/\\/g, "/")
-            );
+          : currentLayouts.map((p) => path.relative(path.resolve("src"), p).replace(/\\/g, "/"));
 
         routes.push({
           path: normalizedPath,
@@ -145,15 +127,10 @@ function toRouteSegment(segment: string): string {
  */
 function normalizeRoutePath(routePath: string, componentPath: string): string {
   const normalized =
-    routePath !== "/" && routePath.endsWith("/")
-      ? routePath.slice(0, -1)
-      : routePath;
+    routePath !== "/" && routePath.endsWith("/") ? routePath.slice(0, -1) : routePath;
 
   // fallback route (404)
-  const componentWithoutExt = componentPath.replace(
-    /\.noWrap\.tsx$|\.tsx$/,
-    ""
-  );
+  const componentWithoutExt = componentPath.replace(/\.noWrap\.tsx$|\.tsx$/, "");
   if (componentWithoutExt === NOT_FOUND_PAGE_PATH) return "*";
 
   return normalized;

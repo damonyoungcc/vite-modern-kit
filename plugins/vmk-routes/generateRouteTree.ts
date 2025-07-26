@@ -1,4 +1,10 @@
 import type { RouteMeta } from "./scanRoutes";
+interface RouteTreeNode {
+  id?: string;
+  path?: string;
+  element: string;
+  children: RouteTreeNode[];
+}
 
 /**
  * Generate React Router route tree using nested structure and lazy loading.
@@ -6,10 +12,7 @@ import type { RouteMeta } from "./scanRoutes";
  * Pages with `page.noWrap.tsx` will not inherit parent layouts.
  */
 export function generateRouteTreeCode(routes: RouteMeta[]): string {
-  const imports: string[] = [
-    `import React from "react";`,
-    `import { lazy } from "react";`,
-  ];
+  const imports: string[] = [`import React from "react";`, `import { lazy } from "react";`];
   const layoutCache = new Map<string, string>();
   const pageCache = new Map<string, string>();
 
@@ -17,24 +20,20 @@ export function generateRouteTreeCode(routes: RouteMeta[]): string {
   routes.forEach((route, index) => {
     const pageId = `Page${index}`;
     pageCache.set(route.componentPath, pageId);
-    imports.push(
-      `const ${pageId} = lazy(() => import("@/${route.componentPath}"));`
-    );
+    imports.push(`const ${pageId} = lazy(() => import("@/${route.componentPath}"));`);
 
     route.layoutPaths.forEach((layoutPath) => {
       if (!layoutCache.has(layoutPath)) {
         const layoutId = `Layout${layoutCache.size}`;
         layoutCache.set(layoutPath, layoutId);
-        imports.push(
-          `const ${layoutId} = lazy(() => import("@/${layoutPath}"));`
-        );
+        imports.push(`const ${layoutId} = lazy(() => import("@/${layoutPath}"));`);
       }
     });
   });
 
   // Convert flat routes into a tree based on layout nesting
-  function buildTree(routes: RouteMeta[]) {
-    const root: any[] = [];
+  function buildTree(routes: RouteMeta[]): RouteTreeNode[] {
+    const root: RouteTreeNode[] = [];
 
     for (const route of routes) {
       const pageId = pageCache.get(route.componentPath)!;
@@ -61,6 +60,7 @@ export function generateRouteTreeCode(routes: RouteMeta[]): string {
       currentLevel.push({
         path: route.path,
         element: `React.createElement(${pageId})`,
+        children: [],
       });
     }
 
@@ -70,7 +70,7 @@ export function generateRouteTreeCode(routes: RouteMeta[]): string {
   const routeTree = buildTree(routes);
 
   // Convert tree to static code
-  function serializeRoutes(nodes: any[]): string {
+  function serializeRoutes(nodes: RouteTreeNode[]): string {
     return `[${nodes
       .map((node) => {
         const children =
