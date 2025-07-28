@@ -1,0 +1,19 @@
+$prefix: "home-page";
+
+.#{$prefix} {
+  &__header {
+    height: 90px;
+    line-height: 90px;
+    text-align: right;
+  }
+  &__page {
+    font-size: $font-size-base;
+    width: 656px;
+    margin: 0 auto;
+    font-size: 16px;
+    h1 {
+      color: #bf0000;
+      font-size: 42px;
+    }
+  }
+}

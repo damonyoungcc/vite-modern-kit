@@ -1,0 +1,54 @@
+:root {
+  // Currently internal variables:
+  --vmk-radius-s: 4px;
+  --vmk-radius-m: 8px;
+  --vmk-radius-l: 12px;
+
+  --vmk-font-size-1: 9px;
+  --vmk-font-size-2: 10px;
+  --vmk-font-size-3: 11px;
+  --vmk-font-size-4: 12px;
+  --vmk-font-size-5: 13px;
+  --vmk-font-size-6: 14px;
+  --vmk-font-size-7: 15px;
+  --vmk-font-size-8: 16px;
+  --vmk-font-size-9: 17px;
+  --vmk-font-size-10: 18px;
+
+  // variables should be exposed to users:
+  --vmk-color-primary: #1677ff;
+  --vmk-color-success: #00b578;
+  --vmk-color-warning: #ff8f1f;
+  --vmk-color-danger: #ff3141;
+
+  --vmk-color-yellow: #ff9f18;
+  --vmk-color-orange: #ff6430;
+  --vmk-color-wathet: #e7f1ff;
+
+  --vmk-color-text: #333333;
+  --vmk-color-text-secondary: #666666;
+  --vmk-color-weak: #999999;
+  --vmk-color-light: #cccccc;
+  --vmk-color-border: #eeeeee;
+  --vmk-color-background: #ffffff;
+
+  --vmk-color-highlight: var(--vmk-color-danger);
+
+  // Deprecated. We use `--vmk-color-text-light-solid` in code
+  // but keep here for compatible
+  --vmk-color-white: #ffffff;
+  --vmk-color-box: #f5f5f5;
+
+  --vmk-color-text-light-solid: var(--vmk-color-white);
+  --vmk-color-text-dark-solid: #000000;
+  --vmk-color-fill-content: var(--vmk-color-box);
+
+  --vmk-font-size-main: var(--vmk-font-size-8);
+
+  --vmk-font-family: -apple-system, blinkmacsystemfont, 'Helvetica Neue',
+    helvetica, segoe ui, arial, roboto, 'PingFang SC', 'miui',
+    'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+
+  // The variables below are deprecated and only exist for backward compatibility:
+  --vmk-border-color: var(--vmk-color-border);
+}

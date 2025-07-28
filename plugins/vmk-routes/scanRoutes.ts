@@ -90,11 +90,9 @@ export function scanRoutes(pagesDir: string): RouteMeta[] {
 
         routeMap.set(normalizedPath, absPath);
 
-        const localLayoutPath = findLocalLayout(dir);
+        // ✅ page.noWrap.tsx will not inherit any layout at all
         const layoutPaths = isNoWrap
-          ? localLayoutPath
-            ? [path.relative(path.resolve("src"), localLayoutPath).replace(/\\/g, "/")]
-            : []
+          ? []
           : currentLayouts.map((p) => path.relative(path.resolve("src"), p).replace(/\\/g, "/"));
 
         routes.push({
@@ -134,19 +132,4 @@ function normalizeRoutePath(routePath: string, componentPath: string): string {
   if (componentWithoutExt === NOT_FOUND_PAGE_PATH) return "*";
 
   return normalized;
-}
-
-/**
- * Recursively search for the nearest layout in current or parent directories
- */
-function findLocalLayout(currentDir: string): string | null {
-  let current = currentDir;
-  while (true) {
-    const layoutPath = path.join(current, LAYOUT_FILE);
-    if (fs.existsSync(layoutPath)) return layoutPath;
-    const parent = path.dirname(current);
-    if (parent === current) break;
-    current = parent;
-  }
-  return null;
 }

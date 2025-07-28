@@ -3,3 +3,10 @@ declare module "virtual:vmk-routes" {
   const routes: RouteObject[];
   export default routes;
 }
+
+declare module "*.scss";
+
+declare module "*.module.scss" {
+  const classes: { [key: string]: string };
+  export default classes;
+}

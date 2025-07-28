@@ -1,0 +1,24 @@
+html[data-prefers-color-scheme="dark"] {
+  // variables should be exposed to users:
+  --vmk-color-primary: #3086ff;
+  --vmk-color-success: #34b368;
+  --vmk-color-warning: #ffa930;
+  --vmk-color-danger: #ff4a58;
+
+  --vmk-color-yellow: #ffa930;
+  --vmk-color-orange: #e65a2b;
+  --vmk-color-wathet: #0d2543;
+
+  --vmk-color-text: #e6e6e6;
+  --vmk-color-text-secondary: #b3b3b3;
+  --vmk-color-weak: #808080;
+  --vmk-color-light: #4d4d4d;
+  --vmk-color-border: #2b2b2b;
+  --vmk-color-box: #0a0a0a;
+  --vmk-color-background: #1a1a1a;
+
+  --vmk-color-background-body: var(--vmk-color-background);
+
+  // The variables below are deprecated and only exist for backward compatibility:
+  --vmk-border-color: var(--vmk-color-border);
+}
