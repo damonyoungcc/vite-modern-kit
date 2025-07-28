@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import vmkRoutes from "./plugins/vmk-routes";
+import logScannedDeps from "./plugins/logScannedDeps";
 import path from "path";
 
 export default defineConfig({
-  plugins: [react(), vmkRoutes()],
+  plugins: [logScannedDeps(), react(), vmkRoutes()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),

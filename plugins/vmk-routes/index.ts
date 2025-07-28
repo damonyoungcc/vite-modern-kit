@@ -60,12 +60,14 @@ export default function VmkRoutesPlugin(): Plugin {
       const isRelevant = file.includes("/src/pages/") && (isPage || isLayout);
 
       if (!isRelevant) return;
-
-      console.log(`[vmk-routes] File change detected: ${file}`);
+      const relativeFile = path.relative(pagesDir, file);
 
       // If the change is in a page or layout file, we need to regenerate routes
       if (type === "create" || type === "delete") {
-        console.log("[vmk-routes] Structural change → triggering full reload");
+        if (modules.length !== 0) {
+          console.log("[vmk-routes] Structural change → triggering full reload");
+          console.log(`[${type}]`, `src/pages/${relativeFile}`);
+        }
 
         routesCode = generateRoutesCode();
         invalidateVirtualModule(server);
@@ -76,7 +78,10 @@ export default function VmkRoutesPlugin(): Plugin {
 
       // if just content change, we just need HMR update
       if (type === "update") {
-        console.log("[vmk-routes] Content change → HMR update only");
+        if (modules.length !== 0) {
+          console.log("[vmk-routes] Content change → HMR update only");
+          console.log(`[${type}]`, `src/pages/${relativeFile}`);
+        }
         return modules;
       }
     },

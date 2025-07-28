@@ -1,19 +1,20 @@
+// scanRoutes.ts
 import fs from "fs";
 import path from "path";
 
 export interface RouteMeta {
   path: string; // URL route path, e.g. /a/:id/*
-  absolutePath: string; // Absolute file path to the page component
   componentPath: string; // Relative import path from src/
   layoutPaths: string[]; // Layout components from outer to inner
+  isNoWrap: boolean; // Whether the page disables layout inheritance
 }
 
-const EXT = ".tsx"; // File extension for page components
-const NO_WRAP_EXT = ".noWrap" + EXT; // No-wrap page component extension
-const PAGE_BASE_NAME = "page"; // Base name for page component
-const INDEX_PAGE_FILE = path.join("index", `${PAGE_BASE_NAME}${EXT}`); // Index page file name
-const LAYOUT_FILE = `_layout${EXT}`; // Layout file name
-const NOT_FOUND_PAGE_PATH = "pages/404/page"; // Default 404 page path
+const EXT = ".tsx";
+const NO_WRAP_EXT = ".noWrap" + EXT;
+const PAGE_BASE_NAME = "page";
+const INDEX_PAGE_FILE = path.join("index", `${PAGE_BASE_NAME}${EXT}`);
+const LAYOUT_FILE = `_layout${EXT}`;
+const NOT_FOUND_PAGE_PATH = "pages/404/page";
 
 /**
  * Scan the pages directory for route definitions.
@@ -28,6 +29,7 @@ export function scanRoutes(pagesDir: string): RouteMeta[] {
   const routeMap = new Map<string, string>();
 
   walk(pagesDir, [], []);
+
   return routes;
 
   function walk(dir: string, parentSegments: string[], parentLayouts: string[]) {
@@ -68,12 +70,13 @@ export function scanRoutes(pagesDir: string): RouteMeta[] {
         const isRootCatchAll =
           segments.length === 2 && segments[0] === "index" && /^\[\.\.\..+\]$/.test(segments[1]);
 
+        // ✅ Filter falsy values to prevent double slashes
         const rawRoutePath =
           segments.length === 0
             ? "/"
             : isRootCatchAll
               ? "/*"
-              : "/" + segments.map(toRouteSegment).join("/");
+              : "/" + segments.map(toRouteSegment).filter(Boolean).join("/");
 
         const componentPath = path.relative(path.resolve("src"), absPath).replace(/\\/g, "/");
 
@@ -87,7 +90,6 @@ export function scanRoutes(pagesDir: string): RouteMeta[] {
             )}" and "${absPath}" both map to "${normalizedPath}"`
           );
         }
-
         routeMap.set(normalizedPath, absPath);
 
         // ✅ page.noWrap.tsx will not inherit any layout at all
@@ -97,9 +99,9 @@ export function scanRoutes(pagesDir: string): RouteMeta[] {
 
         routes.push({
           path: normalizedPath,
-          absolutePath: absPath,
           componentPath,
           layoutPaths,
+          isNoWrap,
         });
       }
     }
@@ -110,12 +112,12 @@ export function scanRoutes(pagesDir: string): RouteMeta[] {
  * Convert folder name into route path segment.
  * e.g. [id] => :id, [...all] => *
  */
-function toRouteSegment(segment: string): string {
+function toRouteSegment(segment: string): string | null {
   if (segment.startsWith("[") && segment.endsWith("]")) {
     const content = segment.slice(1, -1);
     return content.startsWith("...") ? "*" : `:${content}`;
   }
-  return segment === "index" ? "" : segment;
+  return segment === "index" ? null : segment; // ✅ return null instead of ""
 }
 
 /**
