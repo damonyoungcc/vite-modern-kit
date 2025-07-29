@@ -16,5 +16,20 @@ export function getMenuItems(): Promise<MenuItem[]> {
       key: "/main/settings",
       label: "Settings",
     },
+    {
+      key: "/main/about",
+      label: "About",
+    },
+    {
+      key: "/main/contact",
+      label: "Contact",
+    },
+    { key: "/main/help", label: "Help" },
+    { key: "/main/feedback", label: "Feedback" },
+    { key: "/main/documentation", label: "Documentation" },
+    { key: "/main/changelog", label: "Changelog" },
+    { key: "/main/support", label: "Support" },
+    { key: "/main/terms", label: "Terms of Service" },
+    { key: "/main/privacy", label: "Privacy Policy" },
   ]);
 }

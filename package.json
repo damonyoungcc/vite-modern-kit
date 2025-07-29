@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "5.x",
+    "@mdx-js/react": "^3.1.0",
+    "@mdx-js/rollup": "^3.1.0",
     "antd": "^5.26.6",
     "normalize.css": "^8.0.1",
     "react": "^18",
@@ -34,6 +36,8 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "prettier": "^3.6.2",
+    "prismjs": "^1.30.0",
+    "rehype-prism-plus": "^2.0.1",
     "sass": "^1.89.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",

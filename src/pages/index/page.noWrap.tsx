@@ -51,7 +51,7 @@ export default function Home() {
             <ul>
               <li>
                 <Text strong>
-                  <Link>
+                  <Link href="main/routes">
                     React 18 with Vite for fast development and modern build capabilities.
                   </Link>
                 </Text>

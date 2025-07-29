@@ -1,7 +1,10 @@
+import "./style.scss";
+import RouterDocument from "./components/RouterDocument.mdx";
+
 export default function Page() {
   return (
     <div>
-      <h2>routes</h2>
+      <RouterDocument />
     </div>
   );
 }

@@ -1,0 +1,91 @@
+# **File-Based Routing Generator Documentation**
+
+This project uses **Vite's virtual module** feature to automatically generate **file-based routes** by scanning the `src/pages` directory structure.  
+The feature supports:
+- **Infinite nested layout inheritance**
+- Support for `page.noWrap.tsx` files to **skip layout inheritance**
+- Automatic generation of **404 fallback routes**
+- Dynamic component loading using React's **`lazy`**
+
+## **Technology Stack**
+- **Vite Virtual Module**: Generates virtual modules dynamically to inject route code.
+- **React Router**: Used for route management.
+- **Dynamic Import**: Implements on-demand loading using React's **`lazy`** and **`Suspense`**.
+
+---
+
+## **File Directory Structure**
+
+Below is an example file directory structure:
+
+```markdown
+src/
+├── pages/
+│   ├── index/
+│   │   ├── page.tsx (**path: "/"**)
+│   │   ├── _layout.tsx
+│   │   └── [id]/
+│   │       ├── page.tsx (**path: "/:id"**)
+│   │       └── _layout.tsx
+│   ├── about/
+│   │   ├── page.tsx (**path: "/about"**)
+│   │   └── _layout.tsx
+│   ├── contact/
+│   │   └── page.noWrap.tsx (**path: "/contact"**)
+│   ├── [...all]/
+│   │   └── page.tsx (**path: "/*"**)
+│   └── 404/
+│       └── page.tsx (**path: "*"**)
+```
+
+---
+
+## **Generated Routes**
+
+Below is the route structure generated based on the above directory:
+
+```ts
+[
+  {
+    path: "/",
+    element: React.createElement(Layout0),
+    children: [
+      { path: "/", element: React.createElement(Page0) },
+      {
+        path: ":id",
+        element: React.createElement(Layout1),
+        children: [{ path: "", element: React.createElement(Page1) }],
+      },
+    ],
+  },
+  {
+    path: "/about",
+    element: React.createElement(Layout0),
+    children: [{ path: "", element: React.createElement(Page2) }],
+  },
+  { path: "/contact", element: React.createElement(Page3) },
+  {
+    path: "/*",
+    element: React.createElement(Page4),
+  },
+  { path: "*", element: React.createElement(Page404) },
+];
+```
+
+---
+
+## **Layout Inheritance**
+
+- **Nested Layouts**: `_layout.tsx` files define layouts, and child pages automatically inherit parent layouts. For example:
+  - `/index/page.tsx` inherits `/index/_layout.tsx`.
+  - `/index/[id]/page.tsx` inherits both `/index/_layout.tsx` and `/index/[id]/_layout.tsx`.
+
+- **Skipping Layouts**: If a page file is named `page.noWrap.tsx`, it will not inherit any layouts. For example:
+  - `/contact/page.noWrap.tsx` does not inherit any `_layout.tsx`.
+
+---
+
+## **Fallback Routes**
+
+- **404 Page**: `pages/404/page.tsx` is automatically mapped to the fallback route `*`.
+- **Priority**: The 404 route is matched after all other routes, ensuring unmatched paths correctly redirect to the 404 page.
