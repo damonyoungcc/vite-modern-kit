@@ -14,7 +14,8 @@ const NO_WRAP_EXT = ".noWrap" + EXT;
 const PAGE_BASE_NAME = "page";
 const INDEX_PAGE_FILE = path.join("index", `${PAGE_BASE_NAME}${EXT}`);
 const LAYOUT_FILE = `_layout${EXT}`;
-const NOT_FOUND_PAGE_PATH = "pages/404/page";
+const NOT_FOUND_PAGE_PATH = "pages/404/page"; // Global 404 fallback
+const FALLBACK_DIR_NAME = "[...all]"; // Fallback folder indicator
 
 /**
  * Scan the pages directory for route definitions.
@@ -80,7 +81,7 @@ export function scanRoutes(pagesDir: string): RouteMeta[] {
 
         const componentPath = path.relative(path.resolve("src"), absPath).replace(/\\/g, "/");
 
-        const normalizedPath = normalizeRoutePath(rawRoutePath, componentPath);
+        const normalizedPath = normalizeRoutePath(rawRoutePath, componentPath, segments);
 
         // Ensure no duplicate route paths
         if (routeMap.has(normalizedPath)) {
@@ -122,16 +123,20 @@ function toRouteSegment(segment: string): string | null {
 
 /**
  * Normalize route path:
- * - Convert 404 page path to fallback "*"
+ * - Convert root 404 page path to fallback "*"
+ * - Convert nested [...all] directories into catch-all "*"
  * - Remove trailing slash except for root
  */
-function normalizeRoutePath(routePath: string, componentPath: string): string {
+function normalizeRoutePath(routePath: string, componentPath: string, segments: string[]): string {
   const normalized =
     routePath !== "/" && routePath.endsWith("/") ? routePath.slice(0, -1) : routePath;
 
-  // fallback route (404)
+  // fallback route (root 404)
   const componentWithoutExt = componentPath.replace(/\.noWrap\.tsx$|\.tsx$/, "");
   if (componentWithoutExt === NOT_FOUND_PAGE_PATH) return "*";
+
+  // nested catch-all via [...all] directory
+  if (segments.includes(FALLBACK_DIR_NAME)) return "/*";
 
   return normalized;
 }

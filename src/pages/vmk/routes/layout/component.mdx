@@ -1,0 +1,78 @@
+# Layout Wrapping
+
+In routing design, layouts are the backbone of UI composition. Each `_layout.tsx` file represents a structural layer that automatically wraps all pages in its scope. This creates a predictable hierarchy:
+ - A global layout `src/pages/_layout.tsx` wraps the entire application.
+ - Section layouts `_layout.tsx` inside subdirectories apply to their directory and all descendants.
+ - Layouts naturally inherit and stack, so a deeply nested page is wrapped by multiple levels of layouts according to its folder depth.
+
+For cases where a page should be rendered standalone — such as login or error pages — provide `page.noWrap.tsx`, which opts out of all parent layouts and renders the page directly. This ensures both consistency and flexibility within the system.
+
+## Example Structure
+```jsx
+src/
+└── pages/
+    ├── page.tsx                  # /
+    ├── _layout.tsx               #                (Global layout)
+    ├── a/
+    │   ├── _layout.tsx           #                (APage layout inherits Global layout)
+    │   ├── index/page.tsx        # /a
+    │   └── [id]/                 # /a/:id
+    │       ├── page.tsx          # /a/:id
+    │       └── details/page.tsx  # /a/:id/details
+    ├── b/
+    │   └── page.noWrap.tsx       # /b             (no layout wrapping)
+    ├── c/
+    │   ├── index/page.tsx        # /c
+    │   └── [...all]/page.tsx     # /c/*           (scoped fallback)
+    └── 404/page.tsx              # *              (Global fallback)
+```
+
+## Generated Route Config
+
+generate paths build a tree of routes that fully aligns with `React Router v6` best practices:
+
+```jsx
+const routes = [
+  {
+    element: <GlobalLayout />,      // pages/_layout.tsx
+    children: [
+      {
+        path: "/",                  // path: /
+        element: <RootPage />       // pages/page.tsx
+      }
+      {
+        element: <APageLayout />,   // pages/a/_layout.tsx
+        children: [
+          {
+            path: "/a",             // path: /a
+            element: <APage />     // pages/a/index/page.tsx
+          },
+          {
+            path: ":id",             // path: /a/:id
+            element: <AIdPage />,   // pages/a/[id]/page.tsx
+            children: [
+              {
+                path: "details",    // /a/:id/details
+                element: <AIdDetailsPage />,  // pages/a/[id]/details/page.tsx
+              },
+            ],
+          },
+        ]
+      },
+      {
+        path: "c",              // path: /c
+        element: <CPage />,    // pages/c/index/page.tsx
+      },
+      {
+        path: "c/*",          // path: /c/*
+        element: <CFallback />,     // pages/c/[...all]/page.tsx
+      }
+      { path: "*", element: <NotFoundPage /> }, // pages/404/page.tsx
+    ],
+  },
+  {
+    path: "b",          // path: /b
+    element: <BPage />, // pages/b/page.noWrap.tsx
+  },
+];
+```

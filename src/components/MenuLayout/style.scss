@@ -32,7 +32,6 @@ $prefix: "menu-layout";
     padding: 30px 50px 30px 10px;
     font-size: 32px;
     font-weight: bold;
-    // border-bottom: 1px solid #f0f0f0;
     color: #555;
     img {
       width: 40px;
@@ -81,7 +80,7 @@ $prefix: "menu-layout";
 
 .#{$prefix}-content {
   margin-top: 64px;
-  padding: 0 420px 0 64px;
+  padding: 30px 420px 0 64px;
   background: #fff;
   min-height: calc(100vh - 64px);
   overflow: auto;

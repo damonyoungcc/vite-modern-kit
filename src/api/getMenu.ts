@@ -2,11 +2,25 @@
 import type { MenuProps } from "antd";
 type MenuItem = Required<MenuProps>["items"][number];
 
-export function getMenuItems(): Promise<MenuItem[]> {
+export default function getMenuItems(): Promise<MenuItem[]> {
   return Promise.resolve([
     {
-      key: "/main/routes",
+      key: "/vmk/routes",
       label: "Routes",
+      children: [
+        {
+          key: "/vmk/routes/path",
+          label: "Path Mapping",
+        },
+        {
+          key: "/vmk/routes/layout",
+          label: "Layout Wrapping",
+        },
+        {
+          key: "/vmk/routes/engine",
+          label: "Router Engine",
+        },
+      ],
     },
     {
       key: "/main/users",

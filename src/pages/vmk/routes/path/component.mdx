@@ -1,0 +1,68 @@
+# Path Mapping
+
+Routing system follows the principle of <strong>directory = route</strong>, enabling predictable and maintainable navigation across the application.This design ensures that developers can understand the navigation flow directly from the folder structure, reducing the need for manual configuration.  
+By leveraging consistent file naming conventions (`page.tsx`, `page.noWrap.tsx`), the routing system provides a clear contract between file organization and application routes.
+
+```jsx
+src/
+└── pages/
+    ├── page.tsx                  # /
+    ├── _layout.tsx               #                (Global layout)
+    ├── a/
+    │   ├── _layout.tsx           #                (A page layout inherits Global layout)
+    │   ├── index/page.tsx        # /a
+    │   └── [id]/                 # /a/:id
+    │       ├── page.tsx          # /a/:id
+    │       └── details/page.tsx  # /a/:id/details
+    ├── b/
+    │   └── page.noWrap.tsx       # /b             (no layout wrapping)
+    ├── c/
+    │   ├── index/page.tsx        # /c
+    │   └── [...all]/page.tsx     # /c/*           (scoped fallback)
+    └── 404/page.tsx              # *              (Global fallback)
+```
+
+## Routes mapping rules
+
+- <strong>`src/pages/page.tsx`</strong>  
+Root page of the application.  
+Example: `src/pages/page.tsx` → `/`
+
+- <strong>`index/page.tsx`</strong>  
+Maps to the index route of its directory.  
+Example: `src/pages/a/index/page.tsx` → `/a`
+
+- ⚠️ Conflict Rule:
+`a/index/page.tsx` and `a/page.tsx` cannot both exist in the same directory.  
+If both are present, the build fails with a conflict error.
+
+- <strong>`page.noWrap.tsx`</strong>
+Renders a page without inheriting any parent layouts.  
+Example: `src/pages/b/page.noWrap.tsx` → `/b` (ignores global and section layouts)
+
+- <strong>`[param]/page.tsx`</strong>
+Defines a dynamic parameter route.  
+Example: `src/pages/a/[id]/page.tsx` → `/a/:id`
+
+- <strong>`Nested Dynamic Routes`</strong>
+Dynamic routes can nest deeper for more specific paths.  
+Example: `src/pages/a/[id]/details/page.tsx` → `/a/:id/details`
+
+- <strong>`[...all]/page.tsx`</strong>
+Scoped fallback: catches unmatched paths inside a directory.  
+Example: `src/pages/c/[...all]/page.tsx` → `/c/*`
+
+- <strong>`404/page.tsx`</strong>
+Global fallback: the final catch-all for the entire application.  
+Example: `src/pages/404/page.tsx` → `*`
+
+- <strong>`src/pages/_layout.tsx`</strong>
+Global layout: wraps all pages unless disabled.  
+Example: `src/pages/_layout.tsx` wraps /, /a, /b, /c, etc.
+
+- <strong>`src/pages/a/_layout.tsx`</strong>
+Section layout: provides layout for its directory and all descendants.  
+Example:  
+ • `src/pages/a/index/page.tsx` → `/a`  
+ • `src/pages/a/[id]/page.tsx` → `/a/:id`  
+Both are wrapped by `src/pages/a/_layout.tsx`.

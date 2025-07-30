@@ -8,7 +8,7 @@
   --vmk-font-family:
     -apple-system, BlinkMacSystemFont, "avenir next", avenir, helvetica, "helvetica neue", ubuntu,
     roboto, noto, "segoe ui", arial,
-    sans-serif; // The variables below are deprecated and only exist for backward compatibility:
+    sans-serif;
 }
 
 html {
@@ -64,10 +64,8 @@ pre {
 
 code {
   padding: 0.2em 0.4em;
-  margin: 0;
-  font-size: 90%;
+  font-size: 96%;
   white-space: break-spaces;
   background-color: #818b981f;
   border-radius: 6px;
-  tab-size: 8;
 }
