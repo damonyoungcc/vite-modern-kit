@@ -45,10 +45,5 @@
 
   --vmk-font-size-main: var(--vmk-font-size-8);
 
-  --vmk-font-family: -apple-system, blinkmacsystemfont, 'Helvetica Neue',
-    helvetica, segoe ui, arial, roboto, 'PingFang SC', 'miui',
-    'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
-
-  // The variables below are deprecated and only exist for backward compatibility:
-  --vmk-border-color: var(--vmk-color-border);
+    --vmk-border-color: var(--vmk-color-border);
 }

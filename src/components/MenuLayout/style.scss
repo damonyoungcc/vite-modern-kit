@@ -81,10 +81,15 @@ $prefix: "menu-layout";
 
 .#{$prefix}-content {
   margin-top: 64px;
-  padding: 24px;
+  padding: 0 420px 0 64px;
   background: #fff;
   min-height: calc(100vh - 64px);
   overflow: auto;
+  color: #3c3c43;
+  font-size: 16px;
+  font-weight: 350;
+  line-height: 28px;
+  word-wrap: break-word;
 }
 
 /* 🎨 滚动条美化 */

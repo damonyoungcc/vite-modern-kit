@@ -10,7 +10,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     theme={{
       token: {
         colorPrimary: "#bf0000", // 全局主题色
+        fontFamily: "var(--vmk-font-family)",
       },
+      cssVar: true,
     }}
   >
     <React.StrictMode>
