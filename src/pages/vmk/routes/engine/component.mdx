@@ -1,82 +1,51 @@
-# File-Based Routing System Architecture
+# Router Engine
 
-This project implements a scalable <strong>file-based</strong> routing system using <strong>Vite</strong> and <strong>React Router v6</strong>.  
-It leverages Vite’s <strong>virtual module</strong> feature to scan the <code>src/pages</code> directory apply convention-based rules to generate paths build a tree of routes that fully aligns with React Router best practices:
+The Router Engine is responsible for turning the `src/pages/` directory into a dynamic React Router v6 tree. It relies on a Vite virtual module (e.g. virtual:vmk-routes) that exports the current route configuration.
+This virtual module is automatically regenerated whenever the filesystem changes, so developers don’t have to maintain a manual route config.
 
-- route matching
-- intuitive layout nesting
-- fallback handling
 
-By injecting this tree via a virtual module, the system delivers a zero-configuration, convention-over-configuration experience that reduces boilerplate, ensures team-wide consistency, and scales seamlessly for enterprise React applications.
+## How It Works
+ 1. The Vite plugin scans `src/pages/` for `page.tsx`, `page.noWrap.tsx`, and `_layout.tsx` files.
+ 2. It builds a route tree that mirrors the filesystem structure.
+ 3. The plugin provides the tree via the virtual module `virtual:vmk-routes`.
+ 4. React Router v6 consumes it with `useRoutes()`.
 
-## 📁 Example Directory Structure
+<strong>Example usage:</strong>
 
-```markdown
-src/
-└── pages/
-    ├── _layout.tsx               # Global layout
-    ├── a/
-    │   ├── _layout.tsx           # /a layout
-    │   ├── index/page.tsx        # /a
-    │   └── [id]/page.tsx         # /a/:id
-    ├── b/
-    │   └── page.noWrap.tsx       # /b (no Global layout)
-    ├── c/
-    │   ├── index/page.tsx        # /c
-    │   └── [...all]/page.tsx     # /c/* scoped fallback
-    └── 404/page.tsx              # Global fallback (*)
+```tsx
+// router.tsx
+import { useRoutes } from 'react-router-dom';
+import routes from 'virtual:vmk-routes';
+
+export function AppRouter() {
+  return useRoutes(routes);
+}
 ```
 
-## Generated Route Config
+## Hot Module Replacement (HMR)
 
-```jsx
-[
-  {
-    path: "/",
-    element: <GlobalLayout />,
-    children: [
-      {
-        path: "a",
-        element: <ALayout />,
-        children: [
-          { path: "", element: <APage /> },
-          { path: ":id", element: <ADetailPage /> }
-        ]
-      },
-      {
-        path: "c",
-        element: <GlobalLayout />,
-        children: [{ path: "*", element: <CFallback /> }]
-      },
-      { path: "*", element: <NotFoundPage /> }
-    ],
-    { path: "/b", element: <BPage />, noWrap: true },
-  }
-];
-```
+Triggered when only the content of a file changes (no impact on the route structure).
+- Examples: editing a component inside `page.tsx` or `_layout.tsx`.
+- Behavior:
+  - The file updates in place.
+  - The route tree remains unchanged.
+  - React re-renders the affected component via HMR.
+  - Benefit: developers see changes instantly without losing application state.
 
-## 🗂️ Naming Rules
+## Full Reload
 
-- **`index/page.tsx`**  
-  → Renders the exact route of its parent directory.  
-  Example: `src/pages/a/index/page.tsx` → `/a`
+Triggered when a filesystem change may affect the route tree.
+- Examples:
+  - Adding or removing a `page.tsx` or `page.noWrap.tsx`.
+  - Renaming a dynamic segment folder (e.g. `[id] → [userId]`).
+  - Adding or removing a `[...all]` fallback directory.
+- Behavior:
+  - The plugin regenerates the full route tree.
+  - Vite forces a full reload to ensure React Router gets the correct structure.
+  - Benefit: keeps the router configuration consistent with the filesystem, avoiding stale or broken routes.
 
-- **`_layout.tsx`**  
-  → Provides layout for its directory and all descendants.  
-  Example: `src/pages/a/_layout.tsx` wraps `/a` and all `/a/*` children.
-
-- **`page.noWrap.tsx`**  
-  → Renders a page without inheriting any parent layouts.  
-  Example: `src/pages/b/page.noWrap.tsx` → `/b` without wrapping `_layout.tsx`.
-
-- **`[param]/page.tsx`**  
-  → Defines a dynamic parameter route.  
-  Example: `src/pages/a/[id]/page.tsx` → `/a/:id`
-
-- **`[...all]/page.tsx`**  
-  → Scoped fallback: catches unmatched paths inside a directory.  
-  Example: `src/pages/c/[...all]/page.tsx` → `/c/*`
-
-- **`404/page.tsx`**  
-  → Global fallback: final catch-all for the app.  
-  Example: `src/pages/404/page.tsx` → `*`
+## Design Benefits
+- Zero Manual Config: The filesystem is the single source of truth for routes.
+- Fast Feedback Loop: File changes are reflected instantly via HMR.
+- Consistency & Safety: Automatic fallback to full reload on breaking changes keeps the app stable.
+- React Router Native Fit: Routes are assembled as a nested tree, perfectly aligned with React Router v6’s useRoutes().

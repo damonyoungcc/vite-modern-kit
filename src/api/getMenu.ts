@@ -9,16 +9,16 @@ export default function getMenuItems(): Promise<MenuItem[]> {
       label: "Routes",
       children: [
         {
+          key: "/vmk/routes/engine",
+          label: "Router Engine",
+        },
+        {
           key: "/vmk/routes/path",
           label: "Path Mapping",
         },
         {
           key: "/vmk/routes/layout",
           label: "Layout Wrapping",
-        },
-        {
-          key: "/vmk/routes/engine",
-          label: "Router Engine",
         },
       ],
     },
